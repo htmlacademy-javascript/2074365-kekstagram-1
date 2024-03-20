@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм»
 
 * Студент: [Дмитрий Орлов](https://up.htmlacademy.ru/javascript-individual/1/user/2074365).
-* Наставник: `Неизвестно`.
+* Наставник: [Татьяна Симоненко](https://htmlacademy.ru/profile/tatien)
 
 ---
 
