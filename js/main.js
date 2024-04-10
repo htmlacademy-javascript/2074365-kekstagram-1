@@ -1,3 +1,4 @@
 import {getPosts} from './data';
+import {renderingThumbnails} from './thumbnail';
 
-getPosts();
+renderingThumbnails(getPosts());
