@@ -1,4 +1,4 @@
-import {generateNumber, getRandomElementByArray, getRandomPositiveNumber} from './util';
+import {generateNumber, getRandomElementByArray, getRandomPositiveNumber} from './util.js';
 
 // Определение констант
 const constants = {
@@ -84,7 +84,7 @@ const createComments = () => ({
 });
 
 //Получить комментарии
-const getComments = (count) => Array.from({length: getRandomPositiveNumber(1, count)}, () => createComments());
+const getComments = (count) => Array.from({length: getRandomPositiveNumber(5, count)}, () => createComments());
 
 //Получить id для картинки
 const getPictureId = generateNumber();
@@ -98,7 +98,7 @@ const createPost = () => ({
   url: `photos/${getPhotoNumber()}.jpg`,
   description: getRandomElementByArray(5, DESCRIPTIONS),
   likes: getRandomPositiveNumber(constants.MINIMUM_COUNT_LIKES, constants.MAXIMUM_COUNT_LIKES),
-  comments: getComments(5)
+  comments: getComments(15)
 });
 
 //Получить объекты изображений

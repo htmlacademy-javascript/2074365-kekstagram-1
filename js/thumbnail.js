@@ -8,12 +8,13 @@ const thumbnailTemplate = document
 const picturesContainer = document.querySelector('.pictures');
 
 //Инициализируем шаблон данными
-const initializeTemplateWithData = ({url, likes, comments, description}) => {
+const initializeTemplateWithData = ({id, url, likes, comments, description}) => {
   const clonePictureTemplate = thumbnailTemplate.cloneNode(true);
   clonePictureTemplate.querySelector('.picture__img').src = url;
   clonePictureTemplate.querySelector('.picture__img').alt = description;
   clonePictureTemplate.querySelector('.picture__likes').textContent = likes;
-  clonePictureTemplate.querySelector('.picture__comments').textContent = comments;
+  clonePictureTemplate.querySelector('.picture__comments').textContent = comments.message;
+  clonePictureTemplate.dataset.thumbnailId = id;
   return clonePictureTemplate;
 };
 
