@@ -1,6 +1,6 @@
 import {getPosts} from './data.js';
 import {renderingThumbnails} from './thumbnail.js';
-import {showPost} from './photo-viewer.js';
+import {showPost} from './post-viewer.js';
 
 // Массив постов
 const posts = getPosts();
