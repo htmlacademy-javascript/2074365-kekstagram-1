@@ -1,4 +1,6 @@
 import {generatingFragmentComments, generatingPost} from './post-generator.js';
+import {addEventForClosingModalWindow, isCloseModalWindow, removeEventForClosingModalWindow} from './util.js';
+
 
 const container = document.querySelector('.pictures');
 const body = document.querySelector('body');
@@ -19,35 +21,16 @@ const showsModalWindow = () => bigPictureElement.classList.remove('hidden');
 // Скрывает элементы комментария
 const hideCommentElements = () => body.classList.add('modal-open');
 
-// Проверяет событие по клику или по нажатию Esc
-const isCloseModalWindow = (event) => {
-  const isClickToCloseButton = event.target.getAttribute('id') === 'picture-cancel';
-  const isPushToEscape = event.key === 'Escape';
-  return isClickToCloseButton || isPushToEscape;
-};
-
-// Добавляет события по закрытию модального окна
-const addEventForClosingModalWindow = (fun) => {
-  bigPictureCancel.addEventListener('click', fun);
-  document.addEventListener('keydown', fun);
-};
-
-// Удаляет события по закрытию модального окна
-const removeEventForClosingModalWindow = (fun) => {
-  bigPictureCancel.removeEventListener('click', fun);
-  document.removeEventListener('keydown', fun);
-};
-
 // Закрывает модальное окно по клику или Esc
 const closeModalWindow = () => {
   const handleClose = (event) => {
-    if (isCloseModalWindow(event)) {
+    if (isCloseModalWindow(event, 'picture-cancel')) {
       numberCommentsToShow = 0;
       bigPictureElement.classList.add('hidden');
-      removeEventForClosingModalWindow(handleClose);
+      removeEventForClosingModalWindow(bigPictureCancel, handleClose);
     }
   };
-  addEventForClosingModalWindow(handleClose);
+  addEventForClosingModalWindow(bigPictureCancel, handleClose);
 };
 
 // Показывает комментарии
@@ -74,13 +57,13 @@ const showComments = (postElement) => {
 const addEventToShowComments = (postElement) => {
   const addEvent = (event) => {
     showComments(postElement);
-    if (isCloseModalWindow(event)) {
+    if (isCloseModalWindow(event, 'picture-cancel')) {
       commentsLoader.removeEventListener('click', addEvent);
-      removeEventForClosingModalWindow(addEvent);
+      removeEventForClosingModalWindow(bigPictureCancel, addEvent);
     }
   };
   commentsLoader.addEventListener('click', addEvent);
-  addEventForClosingModalWindow(addEvent);
+  addEventForClosingModalWindow(bigPictureCancel, addEvent);
 };
 
 // Показывает пост в модальном окне

@@ -16,3 +16,22 @@ export const generateNumber = () => {
   let id = 1;
   return () => id++;
 };
+
+// Проверяет событие по клику или по нажатию Esc
+export const isCloseModalWindow = (event, buttonId) => {
+  const isClickToCloseButton = event.target.getAttribute('id') === buttonId;
+  const isPushToEscape = event.key === 'Escape';
+  return isClickToCloseButton || isPushToEscape;
+};
+
+// Добавляет события по закрытию модального окна
+export const addEventForClosingModalWindow = (element, fun) => {
+  document.addEventListener('keydown', fun);
+  element.addEventListener('click', fun);
+};
+
+// Удаляет события по закрытию модального окна
+export const removeEventForClosingModalWindow = (element, fun) => {
+  document.removeEventListener('keydown', fun);
+  element.removeEventListener('click', fun);
+};
