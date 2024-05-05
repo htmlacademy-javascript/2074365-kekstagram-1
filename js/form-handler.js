@@ -1,19 +1,29 @@
 import {addEventForClosingModalWindow, isCloseModalWindow, removeEventForClosingModalWindow} from './util.js';
+import {deleteEventHandlersToResizingImages, handlerImageSize} from './photo-processor.js';
+import {createsPhotoEffect, removeEventToSelectEffect} from './photo-filters.js';
 
 
+const uploadFile = document.querySelector('#upload-file');
+const uploadCancel = document.querySelector('#upload-cancel');
 const body = document.querySelector('body');
 const imgUploadOverlay = document.querySelector('.img-upload__overlay');
 const text = document.querySelector('.text');
-const uploadFile = document.querySelector('#upload-file');
-const uploadCancel = document.querySelector('#upload-cancel');
 const textHashtags = document.querySelector('.text__hashtags');
 const textDescription = document.querySelector('.text__description');
+const sliderElement = document.querySelector('.effect-level__slider');
+
 
 // Сбрасывает значения полей
 const resetValuesToField = (...elements) => {
-  for (let i = 0; i < elements.length; i++) {
-    elements[i].value = null;
-  }
+  elements.forEach((element) => {
+    element.value = '';
+  });
+};
+
+// Сбросить параметры редактора фотографий
+const resetPhotoEditorSettings = () => {
+  resetValuesToField(uploadFile, textHashtags, textDescription);
+  sliderElement.noUiSlider.destroy();
 };
 
 // Отменить закрытие модального окна при нажатии Esc
@@ -33,28 +43,25 @@ const handlerToField = () => {
   text.addEventListener('focusin', handlerTrackingKeystroke);
 };
 
+// Удаление обработчиков событий
+const removeEventListeners = () => {
+  text.removeEventListener('focusin', handlerTrackingKeystroke);
+  text.removeEventListener('keydown', cancelCloseModalWindow);
+  deleteEventHandlersToResizingImages();
+  removeEventToSelectEffect();
+};
+
 // Закрывает окно редактирования фотографий по клику или Esc
 const closePhotoHandler = () => {
   const handleClose = (event) => {
     if (isCloseModalWindow(event, 'upload-cancel')) {
       body.classList.remove('modal-open');
       imgUploadOverlay.classList.add('hidden');
-
-      // Сбрасывает значения полей
-      resetValuesToField(uploadFile, textHashtags, textDescription);
-
-      // Удалить обработчик закрытия модального окна
+      resetPhotoEditorSettings();
       removeEventForClosingModalWindow(uploadCancel, handleClose);
-
-      // Удалить обработчик для поля Хэш-тег и комментария
-      text.removeEventListener('focusin', handlerTrackingKeystroke);
-
-      // Удалить обработчик для отслеживания нажатия на клавишу
-      text.removeEventListener('keydown', cancelCloseModalWindow);
+      removeEventListeners();
     }
   };
-
-  // Добавить обработчик закрытия модального окна
   addEventForClosingModalWindow(uploadCancel, handleClose);
 };
 
@@ -64,6 +71,8 @@ export const photoHandler = () => {
     body.classList.add('modal-open');
     imgUploadOverlay.classList.remove('hidden');
     handlerToField();
+    handlerImageSize();
+    createsPhotoEffect();
     closePhotoHandler();
   });
 };
