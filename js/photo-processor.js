@@ -9,7 +9,7 @@ const MIN_SCALE = 25;
 const MAX_SCALE = 100;
 const SCALE_STEP = 25;
 
-let defaultImageSize;
+let currentImageSize = MAX_SCALE;
 
 
 // Масштабирует изображение
@@ -18,39 +18,33 @@ const scaleImage = (value) => {
   scaleControlValue.value = `${value}%`;
 };
 
-// Уменьшить изображение
-const reduceImage = () => {
-  if (defaultImageSize > MIN_SCALE) {
-    defaultImageSize -= SCALE_STEP;
-    scaleImage(defaultImageSize);
-  }
-};
+// Обрабатывает изменение размера изображения
+const changeImage = (event) => {
+  const isReduce = event.target.classList.contains('scale__control--smaller');
+  const isIncrease = event.target.classList.contains('scale__control--bigger');
 
-// Увеличить изображение
-const increaseImage = () => {
-  if (defaultImageSize < MAX_SCALE) {
-    defaultImageSize += SCALE_STEP;
-    scaleImage(defaultImageSize);
+  if ((isReduce && currentImageSize > MIN_SCALE) || (isIncrease && currentImageSize < MAX_SCALE)) {
+    const imageSize = isReduce ? currentImageSize -= SCALE_STEP : currentImageSize += SCALE_STEP;
+    scaleImage(imageSize);
   }
 };
 
 // Обработчик уменьшения размера изображения
-const handlerReduceImageSize = () => scaleControlSmaller.addEventListener('click', reduceImage);
+const handlerReduceImageSize = () => scaleControlSmaller.addEventListener('click', changeImage);
 
 // Обработчик увеличения размера изображения
-const handlerIncreaseImageSize = () => scaleControlBigger.addEventListener('click', increaseImage);
+const handlerIncreaseImageSize = () => scaleControlBigger.addEventListener('click', changeImage);
 
 // Выставить значения по умолчанию
 export const setDefaultValues = () => {
-  defaultImageSize = MAX_SCALE;
-  img.style.transform = 'scale(1)';
-  scaleControlValue.value = '100%';
+  currentImageSize = MAX_SCALE;
+  scaleImage(MAX_SCALE);
 };
 
 // Удаление обработчиков событий по изменению размера изображений
 export const deleteEventHandlersToResizingImages = () => {
-  scaleControlSmaller.removeEventListener('click', reduceImage);
-  scaleControlBigger.removeEventListener('click', increaseImage);
+  scaleControlSmaller.removeEventListener('click', changeImage);
+  scaleControlBigger.removeEventListener('click', changeImage);
 };
 
 // Обработчик размера изображения

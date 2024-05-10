@@ -1,12 +1,18 @@
 const form = document.querySelector('.img-upload__form');
 const textHashtags = document.querySelector('.text__hashtags');
 const textDescription = document.querySelector('.text__description');
+const submitButton = document.querySelector('#upload-submit');
 
 const regExpToHashTag = /^#[a-zа-яё0-9]{1,19}$/i;
 const regExpToComments = /^(?:(?!\s\s).){0,140}$/;
 
 const ERROR_MESSAGE_HASH_TAG = 'Поле хэш-тег не валидно';
 const ERROR_MESSAGE_COMMENT = 'Поле комментарий не валидно';
+
+const SubmitButtonText = {
+  PUBLISH: 'Опубликовать',
+  PUBLISHED: 'Публикуется...'
+};
 
 
 // Валидатор Pristine
@@ -49,32 +55,32 @@ const validateField = (element, validateFunction, message) => {
 };
 
 // Форматирует поле Хэш-Теги
-const formattingHashTagField = () => {
+export const formattingHashTagField = () => {
   textHashtags.value = textHashtags.value.split(' ').filter((item) => item).join(' ');
 };
 
 // Форматирует поле комментария
-const formattingCommentsField = () => {
+export const formattingCommentsField = () => {
   textDescription.value = textDescription.value.trim();
 };
 
-// Добавляем событие отправки формы
-const addEventSubmitForm = () => {
-  const checkEvent = (event) => {
-    if (pristine.validate()) {
-      formattingHashTagField();
-      formattingCommentsField();
-      form.removeEventListener('submit', checkEvent);
-    } else {
-      event.preventDefault();
-    }
-  };
-  form.addEventListener('submit', checkEvent);
+// Заблокировать кнопку отправки
+export const blockSubmitButton = () => {
+  submitButton.disabled = true;
+  submitButton.textContent = SubmitButtonText.PUBLISHED;
 };
+
+// Разблокировать кнопку отправки
+export const unblockSubmitButton = () => {
+  submitButton.disabled = false;
+  submitButton.textContent = SubmitButtonText.PUBLISH;
+};
+
+// Валидна ли форма
+export const isValidForm = () => pristine.validate();
 
 // Валидирует поля
 export const validateFields = () => {
-  addEventSubmitForm();
   validateField('#text__hashtags-id', isValidateHashTagField, ERROR_MESSAGE_HASH_TAG);
   validateField('#text__description-id', isValidateCommentField, ERROR_MESSAGE_COMMENT);
 };
