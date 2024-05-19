@@ -106,7 +106,10 @@ const setSliderValues = (value) => {
 const changeEffectValue = (value) => setSliderValues(value);
 
 // Удаляет класс у изображения предварительного просмотра
-export const removeClassAnImage = () => imageElement.removeAttribute('class');
+const removeClassAnImage = () => imageElement.removeAttribute('class');
+
+// Добавляет класс изображению предварительного просмотра
+const addClassAnImage = (nameStyle) => imageElement.classList.add(`effects__preview--${nameStyle}`);
 
 // Скрывает или показывает ползунок
 const hideOrShowSlider = (value) => effectLevel.classList.toggle('visually-hidden', value === 'none');
@@ -119,7 +122,7 @@ const listenerToSelectEffect = (event) => {
   removeClassAnImage();
   resetStyleFilter();
   setDefaultValues();
-  imageElement.classList.add(`effects__preview--${nameStyle}`);
+  addClassAnImage(nameStyle);
 };
 
 // Добавляет событие для выбора эффекта
@@ -145,7 +148,7 @@ export const removeEventToSelectEffect = () => effectElements.removeEventListene
 
 // Создает фото эффекты
 export const createsPhotoEffect = () => {
-  effectLevel.classList.add('visually-hidden');
+  hideOrShowSlider('none');
   createNoUiSlider();
   removeClassAnImage();
   resetStyleFilter();

@@ -11,7 +11,7 @@ const initializeTemplateWithData = (comment) => {
   const cloneTemplateComment = templateComment.cloneNode(true);
   cloneTemplateComment.querySelector('.social__picture').src = comment.avatar;
   cloneTemplateComment.querySelector('.social__picture').alt = comment.name;
-  cloneTemplateComment.querySelector('.social__text').textContent = comment.message.join('. ');
+  cloneTemplateComment.querySelector('.social__text').textContent = comment.message;
   return cloneTemplateComment;
 };
 
@@ -23,7 +23,7 @@ export const generatingFragmentComments = (selectedComments) => {
 
 // Генерирует пост для модального окна
 export const generatingPost = (postElement) => {
-  const description = postElement.description.join(', ');
+  const description = postElement.description;
   bigPicture.src = postElement.url;
   bigPicture.alt = description;
   likesCount.textContent = postElement.likes;

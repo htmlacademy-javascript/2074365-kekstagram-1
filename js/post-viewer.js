@@ -1,5 +1,5 @@
 import {generatingFragmentComments, generatingPost} from './post-generator.js';
-import {addEventForClosingModalWindow, isCloseModalWindow, removeEventForClosingModalWindow} from './util.js';
+import {addEventForClosingModalWindow, isClickOrEscEvent, removeEventForClosingModalWindow} from './util.js';
 
 
 const container = document.querySelector('.pictures');
@@ -24,7 +24,7 @@ const hideCommentElements = () => body.classList.add('modal-open');
 // Закрывает модальное окно по клику или Esc
 const closeModalWindow = () => {
   const handleClose = (event) => {
-    if (isCloseModalWindow(event, 'picture-cancel')) {
+    if (isClickOrEscEvent(event, 'id', 'picture-cancel')) {
       numberCommentsToShow = 0;
       bigPictureElement.classList.add('hidden');
       removeEventForClosingModalWindow(bigPictureCancel, handleClose);
@@ -57,7 +57,7 @@ const showComments = (postElement) => {
 const addEventToShowComments = (postElement) => {
   const addEvent = (event) => {
     showComments(postElement);
-    if (isCloseModalWindow(event, 'picture-cancel')) {
+    if (isClickOrEscEvent(event, 'id', 'picture-cancel')) {
       commentsLoader.removeEventListener('click', addEvent);
       removeEventForClosingModalWindow(bigPictureCancel, addEvent);
     }

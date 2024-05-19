@@ -1,16 +1,36 @@
-import {addEventForClosingModalWindow, isCloseModalWindow, removeEventForClosingModalWindow} from './util.js';
+import {sendData} from './remote-data.js';
+import {
+  addEventForClosingModalWindow,
+  isClickOrEscEvent,
+  isClickOutsideModal,
+  isFormSubmitEvent,
+  removeEventForClosingModalWindow
+} from './util.js';
 import {deleteEventHandlersToResizingImages, handlerImageSize} from './photo-processor.js';
 import {createsPhotoEffect, removeEventToSelectEffect} from './photo-filters.js';
+import {
+  blockSubmitButton,
+  formattingCommentsField,
+  formattingHashTagField,
+  isValidForm,
+  unblockSubmitButton,
+  validateFields
+} from './form-validator.js';
 
 
 const uploadFile = document.querySelector('#upload-file');
 const uploadCancel = document.querySelector('#upload-cancel');
+const form = document.querySelector('.img-upload__form');
 const body = document.querySelector('body');
 const imgUploadOverlay = document.querySelector('.img-upload__overlay');
 const text = document.querySelector('.text');
 const textHashtags = document.querySelector('.text__hashtags');
 const textDescription = document.querySelector('.text__description');
 const sliderElement = document.querySelector('.effect-level__slider');
+const success = document.querySelector('#success').content.querySelector('.success');
+const error = document.querySelector('#error').content.querySelector('.error');
+
+let isErrorSend;
 
 
 // Сбрасывает значения полей
@@ -34,45 +54,105 @@ const cancelCloseModalWindow = (event) => {
 };
 
 // Обработчик для отслеживания нажатия на клавишу
-const handlerTrackingKeystroke = () => {
-  text.addEventListener('keydown', cancelCloseModalWindow);
-};
+const handlerTrackingKeystroke = () => text.addEventListener('keydown', cancelCloseModalWindow);
 
 // Обработчик для поля Хэш-тег и комментария
-const handlerToField = () => {
-  text.addEventListener('focusin', handlerTrackingKeystroke);
-};
+const handlerToField = () => text.addEventListener('focusin', handlerTrackingKeystroke);
 
 // Удаление обработчиков событий
-const removeEventListeners = () => {
+const removeEventListeners = (listener) => {
   text.removeEventListener('focusin', handlerTrackingKeystroke);
   text.removeEventListener('keydown', cancelCloseModalWindow);
+  form.removeEventListener('submit', listener);
   deleteEventHandlersToResizingImages();
   removeEventToSelectEffect();
 };
 
-// Закрывает окно редактирования фотографий по клику или Esc
-const closePhotoHandler = () => {
-  const handleClose = (event) => {
-    if (isCloseModalWindow(event, 'upload-cancel')) {
-      body.classList.remove('modal-open');
-      imgUploadOverlay.classList.add('hidden');
-      resetPhotoEditorSettings();
-      removeEventForClosingModalWindow(uploadCancel, handleClose);
-      removeEventListeners();
+// Открывает и закрывает окно фоторедактора
+const togglePhotoEditor = () => {
+  body.classList.toggle('modal-open');
+  imgUploadOverlay.classList.toggle('hidden');
+};
+
+// Сбросить настройки фоторедактора
+const resetPhotoEditor = (listener) => {
+  togglePhotoEditor();
+  resetPhotoEditorSettings();
+  removeEventForClosingModalWindow(uploadCancel, listener);
+  removeEventListeners(listener);
+};
+
+// Обработчик модальных окон
+const handleModals = (button, eventTarget, comparisonElements) => {
+  const listener = (event) => {
+    if (isClickOrEscEvent(event, 'class', button.className) || isClickOutsideModal(event, comparisonElements)) {
+      removeEventForClosingModalWindow(button, listener);
+      eventTarget.removeEventListener('click', listener);
+      eventTarget.remove();
     }
   };
-  addEventForClosingModalWindow(uploadCancel, handleClose);
+  addEventForClosingModalWindow(button, listener);
+  eventTarget.addEventListener('click', listener);
+};
+
+// Обработчик модального окна успешной загрузки
+const handleSuccessModal = () => {
+  const successButton = document.querySelector('.success__button');
+  const successElements = Array.from(success.querySelectorAll('*'));
+  handleModals(successButton, success, successElements);
+};
+
+// Обработчик модального окна с неуспешной загрузкой
+const handleErrorModal = () => {
+  const errorButton = document.querySelector('.error__button');
+  const errorElements = Array.from(error.querySelectorAll('*'));
+  handleModals(errorButton, error, errorElements);
+};
+
+// Отправить данные по загруженному контенту
+const uploadPhotoData = (event, listener) => {
+  sendData(event.target)
+    .then(() => {
+      resetPhotoEditor(listener);
+      body.append(success);
+      handleSuccessModal();
+    })
+    .catch(() => {
+      body.append(error);
+      handleErrorModal();
+      isErrorSend = true;
+    })
+    .finally(unblockSubmitButton);
+};
+
+// Слушатель обработчика фоторедактора
+const listenerPhotoEditor = (event) => {
+  if (isFormSubmitEvent(event) && isValidForm) {
+    event.preventDefault();
+    blockSubmitButton();
+    formattingHashTagField();
+    formattingCommentsField();
+    uploadPhotoData(event, listenerPhotoEditor);
+  } else if (isClickOrEscEvent(event, 'id', 'upload-cancel') && !isErrorSend) {
+    resetPhotoEditor(listenerPhotoEditor);
+  }
+  isErrorSend = false;
+};
+
+// Обработчик фоторедактора
+const handlerPhotoEditor = () => {
+  addEventForClosingModalWindow(uploadCancel, listenerPhotoEditor);
+  form.addEventListener('submit', listenerPhotoEditor);
 };
 
 // Обработчик фотографий
 export const photoHandler = () => {
   uploadFile.addEventListener('change', () => {
-    body.classList.add('modal-open');
-    imgUploadOverlay.classList.remove('hidden');
+    togglePhotoEditor();
     handlerToField();
     handlerImageSize();
     createsPhotoEffect();
-    closePhotoHandler();
+    validateFields();
+    handlerPhotoEditor();
   });
 };
