@@ -4,7 +4,7 @@ const textDescription = document.querySelector('.text__description');
 const submitButton = document.querySelector('#upload-submit');
 
 const regExpToHashTag = /^#[a-zа-яё0-9]{1,19}$/i;
-const regExpToComments = /^(?:(?!\s\s).){0,140}$/;
+const regExpToComments = /^.{0,140}$/;
 
 const ERROR_MESSAGE_HASH_TAG = 'Поле хэш-тег не валидно';
 const ERROR_MESSAGE_COMMENT = 'Поле комментарий не валидно';
@@ -16,7 +16,7 @@ const SubmitButtonText = {
 
 
 // Валидатор Pristine
-const pristine = new Pristine(form, {
+export const pristine = new Pristine(form, {
   classTo: 'text__label',
   errorTextParent: 'text__label',
   errorTextTag: 'div',
@@ -75,9 +75,6 @@ export const unblockSubmitButton = () => {
   submitButton.disabled = false;
   submitButton.textContent = SubmitButtonText.PUBLISH;
 };
-
-// Валидна ли форма
-export const isValidForm = () => pristine.validate();
 
 // Валидирует поля
 export const validateFields = () => {
