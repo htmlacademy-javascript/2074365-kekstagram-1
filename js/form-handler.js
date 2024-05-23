@@ -12,7 +12,7 @@ import {
   blockSubmitButton,
   formattingCommentsField,
   formattingHashTagField,
-  isValidForm,
+  pristine,
   unblockSubmitButton,
   validateFields
 } from './form-validator.js';
@@ -44,6 +44,7 @@ const resetValuesToField = (...elements) => {
 const resetPhotoEditorSettings = () => {
   resetValuesToField(uploadFile, textHashtags, textDescription);
   sliderElement.noUiSlider.destroy();
+  pristine.reset();
 };
 
 // Отменить закрытие модального окна при нажатии Esc
@@ -125,14 +126,21 @@ const uploadPhotoData = (event, listener) => {
     .finally(unblockSubmitButton);
 };
 
-// Слушатель обработчика фоторедактора
-const listenerPhotoEditor = (event) => {
-  if (isFormSubmitEvent(event) && isValidForm) {
-    event.preventDefault();
+// Отправляет валидную форму
+const submitValidForm = (event, listener) => {
+  if (pristine.validate()) {
     blockSubmitButton();
     formattingHashTagField();
     formattingCommentsField();
-    uploadPhotoData(event, listenerPhotoEditor);
+    uploadPhotoData(event, listener);
+  }
+};
+
+// Слушатель обработчика фоторедактора
+const listenerPhotoEditor = (event) => {
+  if (isFormSubmitEvent(event)) {
+    event.preventDefault();
+    submitValidForm(event, listenerPhotoEditor);
   } else if (isClickOrEscEvent(event, 'id', 'upload-cancel') && !isErrorSend) {
     resetPhotoEditor(listenerPhotoEditor);
   }
@@ -147,12 +155,12 @@ const handlerPhotoEditor = () => {
 
 // Обработчик фотографий
 export const photoHandler = () => {
+  validateFields();
   uploadFile.addEventListener('change', () => {
     togglePhotoEditor();
     handlerToField();
     handlerImageSize();
     createsPhotoEffect();
-    validateFields();
     handlerPhotoEditor();
   });
 };

@@ -1,6 +1,9 @@
 import {generateNumber} from './util.js';
 import {getData} from './remote-data.js';
 
+
+const filters = document.querySelector('.img-filters');
+
 //Количество объектов изображений
 const PICTURES_COUNT = 25;
 
@@ -18,7 +21,11 @@ const renderComments = (user) => user.comments
 const getId = generateNumber();
 
 // Получить список юзеров
-const getUsers = await getData();
+const getUsers = await getData()
+  .then((data) => {
+    filters.classList.remove('img-filters--inactive');
+    return data;
+  });
 
 // Получить юзера по id
 const getUserById = () => getUsers[getId()];

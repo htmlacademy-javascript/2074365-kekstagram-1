@@ -1,5 +1,6 @@
 import {generatingFragmentComments, generatingPost} from './post-generator.js';
 import {addEventForClosingModalWindow, isClickOrEscEvent, removeEventForClosingModalWindow} from './util.js';
+import {photoHandler} from './form-handler.js';
 
 
 const container = document.querySelector('.pictures');
@@ -67,7 +68,7 @@ const addEventToShowComments = (postElement) => {
 };
 
 // Показывает пост в модальном окне
-export const showPost = (posts) => {
+export const showPostToModalWindow = (posts) => {
   container.addEventListener('click', (event) => {
     const dataId = event.target.closest('[data-thumbnail-id]');
     if (!dataId) {
@@ -84,4 +85,5 @@ export const showPost = (posts) => {
       closeModalWindow();
     }
   });
+  photoHandler();
 };

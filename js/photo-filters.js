@@ -1,6 +1,3 @@
-import {setDefaultValues} from './photo-processor.js';
-
-
 const effectLevel = document.querySelector('.img-upload__effect-level');
 const effectElements = document.querySelector('.img-upload__effects');
 const sliderElement = document.querySelector('.effect-level__slider');
@@ -121,7 +118,6 @@ const listenerToSelectEffect = (event) => {
   changeEffectValue(nameStyle);
   removeClassAnImage();
   resetStyleFilter();
-  setDefaultValues();
   addClassAnImage(nameStyle);
 };
 

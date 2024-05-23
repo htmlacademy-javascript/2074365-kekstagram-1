@@ -1,5 +1,7 @@
 // Время показа сообщения
 const ALERT_SHOW_TIME = 5000;
+// Задержка тайм-аута
+const TIMEOUT_DELAY = 500;
 
 //Функция генерации последовательных чисел
 export const generateNumber = () => {
@@ -49,4 +51,27 @@ export const showAlert = (message) => {
   setTimeout(() => {
     alertContainer.remove();
   }, ALERT_SHOW_TIME);
+};
+
+//Инициализирует шаблон данными
+export const initializeTemplateWithData = ({id, url, likes, comments, description}, template) => {
+  const clonePictureTemplate = template.cloneNode(true);
+  clonePictureTemplate.querySelector('.picture__img').src = url;
+  clonePictureTemplate.querySelector('.picture__img').alt = description;
+  clonePictureTemplate.querySelector('.picture__likes').textContent = likes;
+  clonePictureTemplate.querySelector('.picture__comments').textContent = comments.message;
+  clonePictureTemplate.dataset.thumbnailId = id;
+  return clonePictureTemplate;
+};
+
+// Оптимизирует события
+export const debounce = (callback, timeoutDelay = TIMEOUT_DELAY) => {
+  let timeoutId = null;
+
+  return (...rest) => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    timeoutId = setTimeout(() => callback.apply(this, rest), timeoutDelay);
+  };
 };

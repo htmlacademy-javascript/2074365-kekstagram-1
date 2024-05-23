@@ -36,7 +36,7 @@ const handlerReduceImageSize = () => scaleControlSmaller.addEventListener('click
 const handlerIncreaseImageSize = () => scaleControlBigger.addEventListener('click', changeImage);
 
 // Выставить значения по умолчанию
-export const setDefaultValues = () => {
+const setDefaultValues = () => {
   currentImageSize = MAX_SCALE;
   scaleImage(MAX_SCALE);
 };
