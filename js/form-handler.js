@@ -29,6 +29,10 @@ const textDescription = document.querySelector('.text__description');
 const sliderElement = document.querySelector('.effect-level__slider');
 const success = document.querySelector('#success').content.querySelector('.success');
 const error = document.querySelector('#error').content.querySelector('.error');
+const preview = document.querySelector('.img-upload__preview').querySelector('img');
+const effectsPreview = document.querySelectorAll('.effects__preview');
+
+const FILE_TYPES = ['jpg', 'jpeg', 'png'];
 
 let isErrorSend;
 
@@ -153,10 +157,26 @@ const handlerPhotoEditor = () => {
   form.addEventListener('submit', listenerPhotoEditor);
 };
 
+// Предварительный показ фото
+const showPhotoPreview = () => {
+  const file = uploadFile.files[0];
+  const fileName = file.name.toLowerCase();
+  const matches = FILE_TYPES.some((item) => fileName.endsWith(item));
+  if (matches) {
+    const url = URL.createObjectURL(file);
+    effectsPreview
+      .forEach((item) => {
+        item.style.backgroundImage = `url(${url})`;
+      });
+    preview.src = url;
+  }
+};
+
 // Обработчик фотографий
 export const photoHandler = () => {
   validateFields();
   uploadFile.addEventListener('change', () => {
+    showPhotoPreview();
     togglePhotoEditor();
     handlerToField();
     handlerImageSize();
