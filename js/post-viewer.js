@@ -22,7 +22,7 @@ const showsModalWindow = () => bigPictureElement.classList.remove('hidden');
 // Скрывает элементы комментария
 const hideCommentElements = () => body.classList.add('modal-open');
 
-// Закрывает модальное окно по клику или Esc
+// Закрывает модальное окно просмотра поста по клику или Esc
 const closeModalWindow = () => {
   const handleClose = (event) => {
     if (isClickOrEscEvent(event, 'id', 'picture-cancel')) {
