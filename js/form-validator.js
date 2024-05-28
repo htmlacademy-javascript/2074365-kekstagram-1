@@ -14,7 +14,6 @@ const SubmitButtonText = {
   PUBLISHED: 'Публикуется...'
 };
 
-
 // Валидатор Pristine
 export const pristine = new Pristine(form, {
   classTo: 'text__label',
