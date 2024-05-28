@@ -90,6 +90,11 @@ const resetPhotoEditor = (listener) => {
 // Обработчик модальных окон
 const handleModals = (button, eventTarget, comparisonElements) => {
   const listener = (event) => {
+    const classNameToEvent = event.target.className;
+    if ('error__button' === classNameToEvent || 'error' === classNameToEvent) {
+      isErrorSend = false;
+    }
+
     if (isClickOrEscEvent(event, 'class', button.className) || isClickOutsideModal(event, comparisonElements)) {
       removeEventForClosingModalWindow(button, listener);
       eventTarget.removeEventListener('click', listener);
@@ -145,10 +150,12 @@ const listenerPhotoEditor = (event) => {
   if (isFormSubmitEvent(event)) {
     event.preventDefault();
     submitValidForm(event, listenerPhotoEditor);
+  } else if (isClickOrEscEvent(event, 'id', 'upload-cancel') && isErrorSend) {
+    error.remove();
+    isErrorSend = false;
   } else if (isClickOrEscEvent(event, 'id', 'upload-cancel') && !isErrorSend) {
     resetPhotoEditor(listenerPhotoEditor);
   }
-  isErrorSend = false;
 };
 
 // Обработчик фоторедактора
