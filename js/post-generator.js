@@ -16,13 +16,13 @@ const initializeTemplateWithData = (comment) => {
 };
 
 // Генерирует фрагмент комментарий для поста
-export const generatingFragmentComments = (selectedComments) => {
+export const generateFragmentComments = (selectedComments) => {
   selectedComments.forEach((comment) => fragment.append(initializeTemplateWithData(comment)));
   return fragment;
 };
 
 // Генерирует пост для модального окна
-export const generatingPost = (postElement) => {
+export const generatePost = (postElement) => {
   const description = postElement.description;
   bigPicture.src = postElement.url;
   bigPicture.alt = description;

@@ -6,7 +6,7 @@ import {
   isFormSubmitEvent,
   removeEventForClosingModalWindow
 } from './util.js';
-import {deleteEventHandlersToResizingImages, handlerImageSize} from './photo-processor.js';
+import {deleteEventToResizingImages, handlerImageSize} from './photo-processor.js';
 import {createsPhotoEffect, removeEventToSelectEffect} from './photo-filters.js';
 import {
   blockSubmitButton,
@@ -51,25 +51,25 @@ const resetPhotoEditorSettings = () => {
   pristine.reset();
 };
 
-// Отменить закрытие модального окна при нажатии Esc
-const cancelCloseModalWindow = (event) => {
+// Обработчик отмены закрытия модального окна при нажатии Esc
+const onEventKeydown = (event) => {
   if (event.key === 'Escape') {
     event.stopPropagation();
   }
 };
 
-// Обработчик для отслеживания нажатия на клавишу
-const handlerTrackingKeystroke = () => text.addEventListener('keydown', cancelCloseModalWindow);
+// Обработчик для отслеживания фокусировки на элементе
+const onTextFocusin = () => text.addEventListener('keydown', onEventKeydown);
 
-// Обработчик для поля Хэш-тег и комментария
-const handlerToField = () => text.addEventListener('focusin', handlerTrackingKeystroke);
+// Добавляет события для поля Хэш-тег и комментария
+const addEventsToField = () => text.addEventListener('focusin', onTextFocusin);
 
 // Удаление обработчиков событий
-const removeEventListeners = (listener) => {
-  text.removeEventListener('focusin', handlerTrackingKeystroke);
-  text.removeEventListener('keydown', cancelCloseModalWindow);
-  form.removeEventListener('submit', listener);
-  deleteEventHandlersToResizingImages();
+const removeEventToListeners = (callback) => {
+  text.removeEventListener('focusin', onTextFocusin);
+  text.removeEventListener('keydown', onEventKeydown);
+  form.removeEventListener('submit', callback);
+  deleteEventToResizingImages();
   removeEventToSelectEffect();
 };
 
@@ -80,88 +80,88 @@ const togglePhotoEditor = () => {
 };
 
 // Сбросить настройки фоторедактора
-const resetPhotoEditor = (listener) => {
+const resetPhotoEditor = (callback) => {
   togglePhotoEditor();
   resetPhotoEditorSettings();
-  removeEventForClosingModalWindow(uploadCancel, listener);
-  removeEventListeners(listener);
+  removeEventForClosingModalWindow(uploadCancel, callback);
+  removeEventToListeners(callback);
 };
 
-// Обработчик модальных окон
-const handleModals = (button, eventTarget, comparisonElements) => {
-  const listener = (event) => {
+// Добавляет событие для модальных окон
+const addEvetnToModals = (button, eventTarget, comparisonElements) => {
+  const callback = (event) => {
     const classNameToEvent = event.target.className;
     if ('error__button' === classNameToEvent || 'error' === classNameToEvent) {
       isErrorSend = false;
     }
 
     if (isClickOrEscEvent(event, 'class', button.className) || isClickOutsideModal(event, comparisonElements)) {
-      removeEventForClosingModalWindow(button, listener);
-      eventTarget.removeEventListener('click', listener);
+      removeEventForClosingModalWindow(button, callback);
+      eventTarget.removeEventListener('click', callback);
       eventTarget.remove();
     }
   };
-  addEventForClosingModalWindow(button, listener);
-  eventTarget.addEventListener('click', listener);
+  addEventForClosingModalWindow(button, callback);
+  eventTarget.addEventListener('click', callback);
 };
 
-// Обработчик модального окна успешной загрузки
-const handleSuccessModal = () => {
+// Добавляет событие для модального окна успешной загрузки
+const addEventToSuccessModal = () => {
   const successButton = document.querySelector('.success__button');
   const successElements = Array.from(success.querySelectorAll('*'));
-  handleModals(successButton, success, successElements);
+  addEvetnToModals(successButton, success, successElements);
 };
 
-// Обработчик модального окна с неуспешной загрузкой
-const handleErrorModal = () => {
+// Добавляет событие для модального окна с неуспешной загрузкой
+const addEventToErrorModal = () => {
   const errorButton = document.querySelector('.error__button');
   const errorElements = Array.from(error.querySelectorAll('*'));
-  handleModals(errorButton, error, errorElements);
+  addEvetnToModals(errorButton, error, errorElements);
 };
 
 // Отправить данные по загруженному контенту
-const uploadPhotoData = (event, listener) => {
+const uploadPhotoData = (event, callback) => {
   sendData(event.target)
     .then(() => {
-      resetPhotoEditor(listener);
+      resetPhotoEditor(callback);
       body.append(success);
-      handleSuccessModal();
+      addEventToSuccessModal();
     })
     .catch(() => {
       body.append(error);
-      handleErrorModal();
+      addEventToErrorModal();
       isErrorSend = true;
     })
     .finally(unblockSubmitButton);
 };
 
 // Отправляет валидную форму
-const submitValidForm = (event, listener) => {
+const submitValidForm = (event, callback) => {
   if (pristine.validate()) {
     blockSubmitButton();
     formattingHashTagField();
     formattingCommentsField();
-    uploadPhotoData(event, listener);
-  }
-};
-
-// Слушатель обработчика фоторедактора
-const listenerPhotoEditor = (event) => {
-  if (isFormSubmitEvent(event)) {
-    event.preventDefault();
-    submitValidForm(event, listenerPhotoEditor);
-  } else if (isClickOrEscEvent(event, 'id', 'upload-cancel') && isErrorSend) {
-    error.remove();
-    isErrorSend = false;
-  } else if (isClickOrEscEvent(event, 'id', 'upload-cancel') && !isErrorSend) {
-    resetPhotoEditor(listenerPhotoEditor);
+    uploadPhotoData(event, callback);
   }
 };
 
 // Обработчик фоторедактора
-const handlerPhotoEditor = () => {
-  addEventForClosingModalWindow(uploadCancel, listenerPhotoEditor);
-  form.addEventListener('submit', listenerPhotoEditor);
+const onFormSubmitKeydownClick = (event) => {
+  if (isFormSubmitEvent(event)) {
+    event.preventDefault();
+    submitValidForm(event, onFormSubmitKeydownClick);
+  } else if (isClickOrEscEvent(event, 'id', 'upload-cancel') && isErrorSend) {
+    error.remove();
+    isErrorSend = false;
+  } else if (isClickOrEscEvent(event, 'id', 'upload-cancel') && !isErrorSend) {
+    resetPhotoEditor(onFormSubmitKeydownClick);
+  }
+};
+
+// Добавляет события для фоторедактора
+const addEventsToPhotoEditor = () => {
+  addEventForClosingModalWindow(uploadCancel, onFormSubmitKeydownClick);
+  form.addEventListener('submit', onFormSubmitKeydownClick);
 };
 
 // Предварительный показ фото
@@ -185,9 +185,9 @@ export const photoHandler = () => {
   uploadFile.addEventListener('change', () => {
     showPhotoPreview();
     togglePhotoEditor();
-    handlerToField();
+    addEventsToField();
     handlerImageSize();
     createsPhotoEffect();
-    handlerPhotoEditor();
+    addEventsToPhotoEditor();
   });
 };

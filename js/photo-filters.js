@@ -111,8 +111,8 @@ const addClassAnImage = (nameStyle) => imageElement.classList.add(`effects__prev
 // Скрывает или показывает ползунок
 const hideOrShowSlider = (value) => effectLevel.classList.toggle('visually-hidden', value === 'none');
 
-// Слушатель для выбора эффекта
-const listenerToSelectEffect = (event) => {
+// Обработчик для выбора эффекта
+const onImgUploadEffectsChange = (event) => {
   const nameStyle = event.target.value;
   hideOrShowSlider(nameStyle);
   changeEffectValue(nameStyle);
@@ -122,7 +122,7 @@ const listenerToSelectEffect = (event) => {
 };
 
 // Добавляет событие для выбора эффекта
-const addEventToSelectEffect = () => effectElements.addEventListener('change', listenerToSelectEffect);
+const addEventToSelectEffect = () => effectElements.addEventListener('change', onImgUploadEffectsChange);
 
 // Создает noUiSlider
 const createNoUiSlider = () => {
@@ -140,7 +140,7 @@ const createNoUiSlider = () => {
 };
 
 // Удаляет событие для выбора эффекта
-export const removeEventToSelectEffect = () => effectElements.removeEventListener('change', listenerToSelectEffect);
+export const removeEventToSelectEffect = () => effectElements.removeEventListener('change', onImgUploadEffectsChange);
 
 // Создает фото эффекты
 export const createsPhotoEffect = () => {

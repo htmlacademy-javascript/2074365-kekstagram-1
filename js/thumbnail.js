@@ -62,16 +62,16 @@ const getSortedPosts = (event) => {
 // Создаем debounce только один раз вне функции listenerToSorting
 const debounceRenderGallery = debounce(renderGallery);
 
-// Слушатель сортировки
-const listenerToSorting = (event) => {
+// Обработчик фильтрации изображений
+const onImgFiltersFormClick = (event) => {
   debounceRenderGallery(getSortedPosts(event));
 };
 
 // Добавляет событие на сортировку
-const addEventForSorting = () => filterForm.addEventListener('click', listenerToSorting);
+const addEventForSorting = () => filterForm.addEventListener('click', onImgFiltersFormClick);
 
 // Рендеринг миниатюр и модального окна
-const renderingThumbnails = () => {
+const renderThumbnails = () => {
   DEFAULT_POSTS = [...getPosts()];
   renderGallery(DEFAULT_POSTS);
   showPostToModalWindow(DEFAULT_POSTS);
@@ -80,5 +80,5 @@ const renderingThumbnails = () => {
 
 // Точка старта приложения
 export const startApp = () => {
-  renderingThumbnails();
+  renderThumbnails();
 };
