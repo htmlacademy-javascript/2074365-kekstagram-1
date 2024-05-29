@@ -88,7 +88,7 @@ const resetPhotoEditor = (callback) => {
 };
 
 // Добавляет событие для модальных окон
-const addEvetnToModals = (button, eventTarget, comparisonElements) => {
+const addEventToModals = (button, eventTarget, comparisonElements) => {
   const callback = (event) => {
     const classNameToEvent = event.target.className;
     if ('error__button' === classNameToEvent || 'error' === classNameToEvent) {
@@ -109,14 +109,14 @@ const addEvetnToModals = (button, eventTarget, comparisonElements) => {
 const addEventToSuccessModal = () => {
   const successButton = document.querySelector('.success__button');
   const successElements = Array.from(success.querySelectorAll('*'));
-  addEvetnToModals(successButton, success, successElements);
+  addEventToModals(successButton, success, successElements);
 };
 
 // Добавляет событие для модального окна с неуспешной загрузкой
 const addEventToErrorModal = () => {
   const errorButton = document.querySelector('.error__button');
   const errorElements = Array.from(error.querySelectorAll('*'));
-  addEvetnToModals(errorButton, error, errorElements);
+  addEventToModals(errorButton, error, errorElements);
 };
 
 // Отправить данные по загруженному контенту
