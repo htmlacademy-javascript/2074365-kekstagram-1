@@ -23,15 +23,15 @@ export const isFormSubmitEvent = (event) => event.target.getAttribute('id') === 
 export const isClickOutsideModal = (event, element) => !element.some((item) => item.contains(event.target));
 
 // Добавляет события по закрытию модального окна
-export const addEventForClosingModalWindow = (element, fun) => {
-  document.addEventListener('keydown', fun);
-  element.addEventListener('click', fun);
+export const addEventForClosingModalWindow = (element, callback) => {
+  document.addEventListener('keydown', callback);
+  element.addEventListener('click', callback);
 };
 
 // Удаляет события по закрытию модального окна
-export const removeEventForClosingModalWindow = (element, fun) => {
-  document.removeEventListener('keydown', fun);
-  element.removeEventListener('click', fun);
+export const removeEventForClosingModalWindow = (element, callback) => {
+  document.removeEventListener('keydown', callback);
+  element.removeEventListener('click', callback);
 };
 
 export const showAlert = (message) => {
@@ -51,7 +51,7 @@ export const initializeTemplateWithData = ({id, url, likes, comments, descriptio
   clonePictureTemplate.querySelector('.picture__img').src = url;
   clonePictureTemplate.querySelector('.picture__img').alt = description;
   clonePictureTemplate.querySelector('.picture__likes').textContent = likes;
-  clonePictureTemplate.querySelector('.picture__comments').textContent = comments.message;
+  clonePictureTemplate.querySelector('.picture__comments').textContent = comments.length;
   clonePictureTemplate.dataset.thumbnailId = id;
   return clonePictureTemplate;
 };

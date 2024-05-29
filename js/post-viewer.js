@@ -1,4 +1,4 @@
-import {generatingFragmentComments, generatingPost} from './post-generator.js';
+import {generateFragmentComments, generatePost} from './post-generator.js';
 import {addEventForClosingModalWindow, isClickOrEscEvent, removeEventForClosingModalWindow} from './util.js';
 import {photoHandler} from './form-handler.js';
 
@@ -16,22 +16,22 @@ let numberCommentsToShow = 0;
 const selectedComments = [];
 
 
-// Показывает модальное окно
-const showsModalWindow = () => bigPictureElement.classList.remove('hidden');
+// Переключает режимы для отображения картинки
+const toggleModalToBigPicture = () => bigPictureElement.classList.toggle('hidden');
 
-// Скрывает элементы комментария
-const hideCommentElements = () => body.classList.add('modal-open');
+// Переключает режимы отображения модального окна
+const toggleDisplayModesModal = () => body.classList.toggle('modal-open');
 
-// Закрывает модальное окно просмотра поста по клику или Esc
-const closeModalWindow = () => {
-  const handleClose = (event) => {
+// Добавляет событие для закрытия модального окна просмотра поста по клику или Esc
+const addEventCloseModalWindow = () => {
+  const callback = (event) => {
     if (isClickOrEscEvent(event, 'id', 'picture-cancel')) {
       numberCommentsToShow = 0;
-      bigPictureElement.classList.add('hidden');
-      removeEventForClosingModalWindow(bigPictureCancel, handleClose);
+      toggleModalToBigPicture();
+      removeEventForClosingModalWindow(bigPictureCancel, callback);
     }
   };
-  addEventForClosingModalWindow(bigPictureCancel, handleClose);
+  addEventForClosingModalWindow(bigPictureCancel, callback);
 };
 
 // Показывает комментарии
@@ -48,7 +48,7 @@ const showComments = (postElement) => {
     selectedComments.push(comments[i]);
   }
 
-  const fragment = generatingFragmentComments(selectedComments);
+  const fragment = generateFragmentComments(selectedComments);
   selectedComments.splice(0, selectedComments.length);
   socialComments.innerHTML = '';
   socialComments.append(fragment);
@@ -56,15 +56,16 @@ const showComments = (postElement) => {
 
 // Добавляет события для отображения комментариев
 const addEventToShowComments = (postElement) => {
-  const addEvent = (event) => {
+  const callback = (event) => {
     showComments(postElement);
     if (isClickOrEscEvent(event, 'id', 'picture-cancel')) {
-      commentsLoader.removeEventListener('click', addEvent);
-      removeEventForClosingModalWindow(bigPictureCancel, addEvent);
+      commentsLoader.removeEventListener('click', callback);
+      removeEventForClosingModalWindow(bigPictureCancel, callback);
+      toggleDisplayModesModal();
     }
   };
-  commentsLoader.addEventListener('click', addEvent);
-  addEventForClosingModalWindow(bigPictureCancel, addEvent);
+  commentsLoader.addEventListener('click', callback);
+  addEventForClosingModalWindow(bigPictureCancel, callback);
 };
 
 // Показывает пост в модальном окне
@@ -77,12 +78,12 @@ export const showPostToModalWindow = (posts) => {
 
     const postElement = posts.find((post) => post.id === parseInt(dataId.dataset.thumbnailId, 10));
     if (postElement) {
-      showsModalWindow();
-      hideCommentElements();
-      generatingPost(postElement);
+      toggleModalToBigPicture();
+      toggleDisplayModesModal();
+      generatePost(postElement);
       showComments(postElement);
       addEventToShowComments(postElement);
-      closeModalWindow();
+      addEventCloseModalWindow();
     }
   });
   photoHandler();
